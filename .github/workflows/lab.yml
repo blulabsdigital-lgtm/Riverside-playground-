@@ -1,0 +1,60 @@
+# Riverside lab: runs one Nano Banana experiment job and saves the results to the lab-output branch.
+# Started by hand (or by Claude) from the Actions tab. Needs the GEMINI_API_KEY repository secret.
+# Separate from the bathroom visualiser: it never reads, calls or changes it.
+name: Lab
+
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Job folder name under lab/jobs (for example smoke)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lab
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run the job
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          JOB: ${{ inputs.job }}
+          OUT_DIR: ${{ runner.temp }}/lab-out
+        run: node lab/run.mjs "$JOB"
+
+      - name: Save the results to the lab-output branch
+        env:
+          JOB: ${{ inputs.job }}
+          RUN: ${{ github.run_id }}
+        run: |
+          set -e
+          case "$JOB" in ""|*[!a-z0-9-]*) echo "Bad job name"; exit 1;; esac
+          git config user.name "riverside-lab"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin lab-output >/dev/null 2>&1; then
+            git fetch -q --depth 1 origin lab-output
+            git checkout -q -B lab-output FETCH_HEAD
+          else
+            git checkout -q --orphan lab-output
+            git rm -rq --cached . >/dev/null 2>&1 || true
+            find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          fi
+          mkdir -p "results/$JOB-$RUN"
+          cp -r "$RUNNER_TEMP/lab-out/." "results/$JOB-$RUN/"
+          git add results
+          git commit -q -m "Lab results: $JOB (run $RUN)"
+          git push -q origin lab-output

@@ -1,0 +1,11 @@
+{
+  "model": "gemini-3.1-flash-image",
+  "size": "1K",
+  "items": [
+    {
+      "id": "brass-swatch",
+      "aspect": "1:1",
+      "prompt": "A seamless, tileable square texture of brushed brass, seen straight on with flat even lighting, no shadows, no objects, no text. Fine horizontal brushing, warm golden colour. Photographic material sample for a 3D model."
+    }
+  ]
+}
