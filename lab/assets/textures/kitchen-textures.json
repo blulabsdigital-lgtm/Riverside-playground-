@@ -1,0 +1,364 @@
+{
+  "about": "Procedural textures for the Riverside kitchen generator (tools/blender/kitchen_textures.py, used by tools/blender/kitchen.py). Replace any file with a photographic texture of the same real-world size (tileMetres) and the same name. Albedo files marked tintable are multiplied by a card colour, so keep replacements light and neutral; update meanLinear (the mean linear RGB) if you replace one.",
+  "textures": {
+    "kitchen-fabric-boucle-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.3,
+      "px": 1024,
+      "meanLinear": [
+        0.7103,
+        0.6944,
+        0.6786
+      ],
+      "tintable": true,
+      "note": "Boucle upholstery, tinted."
+    },
+    "kitchen-fabric-rug-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.785,
+        0.7588,
+        0.7326
+      ],
+      "tintable": true,
+      "note": "Flat-weave rug, one tile is the whole rug, tinted."
+    },
+    "kitchen-floor-boards-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 2.4,
+      "px": 1024,
+      "note": "Shared by the board floors."
+    },
+    "kitchen-floor-chequer-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.2,
+      "px": 1024,
+      "meanLinear": [
+        0.4321,
+        0.4158,
+        0.3872
+      ],
+      "tintable": false,
+      "note": "Black and white chequer, 300 mm tiles."
+    },
+    "kitchen-floor-chequer-normal.png": {
+      "kind": "normal",
+      "tileMetres": 1.2,
+      "px": 1024
+    },
+    "kitchen-floor-concrete-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 3.0,
+      "px": 1024,
+      "meanLinear": [
+        0.2939,
+        0.2811,
+        0.2597
+      ],
+      "tintable": true,
+      "note": "Polished concrete-effect floor."
+    },
+    "kitchen-floor-concrete-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 3.0,
+      "px": 1024
+    },
+    "kitchen-floor-herringbone-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.2728,
+      "px": 1024,
+      "meanLinear": [
+        0.5321,
+        0.3063,
+        0.1491
+      ],
+      "tintable": true,
+      "note": "Oak herringbone, 90 x 450 mm blocks."
+    },
+    "kitchen-floor-herringbone-normal.png": {
+      "kind": "normal",
+      "tileMetres": 1.2728,
+      "px": 1024
+    },
+    "kitchen-floor-oak-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 2.4,
+      "px": 1024,
+      "meanLinear": [
+        0.5827,
+        0.3616,
+        0.1844
+      ],
+      "tintable": true,
+      "note": "Boards 0.2 m wide, grain along v."
+    },
+    "kitchen-floor-oak-normal.png": {
+      "kind": "normal",
+      "tileMetres": 2.4,
+      "px": 1024
+    },
+    "kitchen-floor-porcelain-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.2,
+      "px": 1024,
+      "meanLinear": [
+        0.6555,
+        0.6226,
+        0.5741
+      ],
+      "tintable": true,
+      "note": "Porcelain 600 x 600 mm, 3 mm grout."
+    },
+    "kitchen-floor-porcelain-normal.png": {
+      "kind": "normal",
+      "tileMetres": 1.2,
+      "px": 1024
+    },
+    "kitchen-floor-smoked-oak-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 2.4,
+      "px": 1024,
+      "meanLinear": [
+        0.137,
+        0.0762,
+        0.0467
+      ],
+      "tintable": true,
+      "note": "Boards 0.2 m wide, grain along v."
+    },
+    "kitchen-floor-smoked-oak-normal.png": {
+      "kind": "normal",
+      "tileMetres": 2.4,
+      "px": 1024
+    },
+    "kitchen-hob-induction-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.0067,
+        0.0067,
+        0.0077
+      ],
+      "tintable": false,
+      "note": "Black glass induction hob with printed zones. One tile is the whole hob."
+    },
+    "kitchen-metal-brushed-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 0.2,
+      "px": 1024,
+      "note": "Brushed metal, brushing along u."
+    },
+    "kitchen-stone-concrete-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.3441,
+        0.33,
+        0.3073
+      ],
+      "tintable": true,
+      "note": "Concrete-effect worktop with pinholes."
+    },
+    "kitchen-stone-concrete-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 1.0,
+      "px": 1024
+    },
+    "kitchen-stone-marble-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.6,
+      "px": 1024,
+      "meanLinear": [
+        0.8078,
+        0.7836,
+        0.7402
+      ],
+      "tintable": false,
+      "note": "Polished stone slab."
+    },
+    "kitchen-stone-nero-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.6,
+      "px": 1024,
+      "meanLinear": [
+        0.0232,
+        0.0227,
+        0.0239
+      ],
+      "tintable": false,
+      "note": "Polished stone slab."
+    },
+    "kitchen-stone-quartz-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.8,
+      "px": 1024,
+      "meanLinear": [
+        0.8636,
+        0.8425,
+        0.8055
+      ],
+      "tintable": false,
+      "note": "White quartz with a fine speckle."
+    },
+    "kitchen-stone-terrazzo-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.6,
+      "px": 1024,
+      "meanLinear": [
+        0.7559,
+        0.6835,
+        0.5968
+      ],
+      "tintable": false,
+      "note": "Pale terrazzo with terracotta, grey and white chips."
+    },
+    "kitchen-tile-metro-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.6,
+      "px": 1024,
+      "meanLinear": [
+        0.8952,
+        0.876,
+        0.836
+      ],
+      "tintable": true,
+      "note": "Metro tiles 200 x 100 mm, brick bond, bevelled edge. White, tinted to the card colour."
+    },
+    "kitchen-tile-metro-dark-grout-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.6,
+      "px": 1024,
+      "meanLinear": [
+        0.8777,
+        0.8592,
+        0.821
+      ],
+      "tintable": true,
+      "note": "Metro tiles 200 x 100 mm, brick bond, bevelled edge. White, tinted to the card colour."
+    },
+    "kitchen-tile-metro-normal.png": {
+      "kind": "normal",
+      "tileMetres": 0.6,
+      "px": 1024
+    },
+    "kitchen-tile-metro-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 0.6,
+      "px": 1024
+    },
+    "kitchen-tile-zellige-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.6,
+      "px": 1024,
+      "meanLinear": [
+        0.8511,
+        0.8224,
+        0.7562
+      ],
+      "tintable": true,
+      "note": "Zellige 100 mm squares, white glaze, tinted to the card colour."
+    },
+    "kitchen-tile-zellige-normal.png": {
+      "kind": "normal",
+      "tileMetres": 0.6,
+      "px": 1024
+    },
+    "kitchen-tile-zellige-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 0.6,
+      "px": 1024
+    },
+    "kitchen-view-garden.png": {
+      "kind": "emission",
+      "px": 1024,
+      "note": "Out-of-focus garden seen through the window. Not tiled."
+    },
+    "kitchen-wall-brick-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 0.9,
+      "px": 1024,
+      "meanLinear": [
+        0.2696,
+        0.1271,
+        0.0883
+      ],
+      "tintable": false,
+      "note": "Exposed red brick, 215 x 65 mm, 10 mm lime mortar."
+    },
+    "kitchen-wall-brick-normal.png": {
+      "kind": "normal",
+      "tileMetres": 0.9,
+      "px": 1024
+    },
+    "kitchen-wall-microcement-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 2.0,
+      "px": 1024,
+      "meanLinear": [
+        0.7965,
+        0.7679,
+        0.7275
+      ],
+      "tintable": true,
+      "note": "Microcement wall, light so it tints to the card colour."
+    },
+    "kitchen-wall-plaster-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 2.0,
+      "px": 1024,
+      "meanLinear": [
+        0.9174,
+        0.9017,
+        0.8773
+      ],
+      "tintable": true,
+      "note": "Painted plaster, near white so it tints to any wall colour."
+    },
+    "kitchen-wood-oak-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.6432,
+        0.4189,
+        0.229
+      ],
+      "tintable": true,
+      "note": "Natural oak. Doors, shelves, worktop and stools. Grain runs along v."
+    },
+    "kitchen-wood-roughness.png": {
+      "kind": "roughness",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "note": "Shared by all wood."
+    },
+    "kitchen-wood-smoked-oak-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.1748,
+        0.1015,
+        0.0587
+      ],
+      "tintable": true,
+      "note": "Smoked oak. Grain runs along v."
+    },
+    "kitchen-wood-walnut-albedo.png": {
+      "kind": "albedo",
+      "tileMetres": 1.0,
+      "px": 1024,
+      "meanLinear": [
+        0.1925,
+        0.0882,
+        0.0438
+      ],
+      "tintable": true,
+      "note": "Walnut. Grain runs along v."
+    }
+  }
+}

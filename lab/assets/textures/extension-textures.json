@@ -1,0 +1,123 @@
+{
+  "note": "Procedural textures for tools/blender/extension.py. Replace any colour map file-for-file (same name, same tile size and layout). tileMetres is the real-world width and height one tile covers.",
+  "textures": [
+    {
+      "file": "brick-london-stock.png",
+      "tileMetres": [
+        1.6875,
+        1.65
+      ],
+      "description": "Yellow London stock brick in Flemish bond with lime mortar. 5 bond units (stretcher plus header) across, 22 courses up.",
+      "replacePrompt": "A seamless, tileable, straight-on photographic texture of a weathered yellow London stock brick wall in Flemish bond (alternating stretchers and headers in every course), 5 stretcher-header pairs across and 22 courses high, light grey-cream lime mortar, natural variation with darker brown and grey bricks and dark specks, flat even lighting, no shadows, no objects, no text.",
+      "normal": "brick-london-stock-normal.png"
+    },
+    {
+      "file": "brick-red-soldier.png",
+      "tileMetres": [
+        1.2,
+        0.3
+      ],
+      "description": "Red rubbed brick soldier course used over the original sash windows. 16 upright bricks across.",
+      "replacePrompt": "A seamless horizontal strip texture of a red rubbed brick soldier course (16 upright bricks side by side with very fine joints), straight on, flat even lighting, no text.",
+      "normal": "brick-red-soldier-normal.png"
+    },
+    {
+      "file": "slate-welsh.png",
+      "tileMetres": [
+        2.0,
+        2.0
+      ],
+      "description": "Natural Welsh blue-grey roof slates, 500 x 250 mm laid at 200 mm gauge. 8 slates across, 10 courses up.",
+      "replacePrompt": "A seamless, tileable, straight-on texture of a natural Welsh blue-grey slate roof, rectangular slates 8 across and 10 courses high in broken bond, slight purple tint and riven surface, thin dark gaps, flat even lighting, no text.",
+      "normal": "slate-welsh-normal.png"
+    },
+    {
+      "file": "render-white.png",
+      "tileMetres": [
+        2.0,
+        2.0
+      ],
+      "description": "Crisp warm-white through-coloured silicone render with a fine sand finish.",
+      "replacePrompt": "A seamless, tileable, straight-on texture of smooth warm-white silicone render with a very fine sand finish, almost uniform, flat even lighting, no text.",
+      "normal": "render-white-normal.png"
+    },
+    {
+      "file": "lawn.png",
+      "tileMetres": [
+        1.5,
+        1.5
+      ],
+      "description": "Close-mown lawn seen from above, gentle patchiness.",
+      "replacePrompt": "A seamless, tileable, top-down photographic texture of a healthy close-mown English lawn, fine grass blades, subtle natural colour variation, flat even lighting, no objects, no text.",
+      "normal": "lawn-normal.png"
+    },
+    {
+      "file": "paving-porcelain.png",
+      "tileMetres": [
+        3.6,
+        3.6
+      ],
+      "description": "Light warm-grey outdoor porcelain slabs, 900 x 600 mm in half bond, 4 across and 6 rows, 5 mm joints.",
+      "replacePrompt": "A seamless, tileable, top-down texture of light warm-grey outdoor porcelain paving slabs 900 x 600 mm laid in half bond, 4 slabs across and 6 rows, thin grey joints, subtle sandstone-like variation, flat even lighting, no text.",
+      "normal": "paving-porcelain-normal.png"
+    },
+    {
+      "file": "timber-cedar.png",
+      "tileMetres": [
+        1.0,
+        1.0
+      ],
+      "description": "Western red cedar fence boards, grain running horizontally.",
+      "replacePrompt": "A seamless, tileable, straight-on texture of planed western red cedar timber, grain running left to right, warm honey and red-brown tones with a few small knots, flat even lighting, no board joints, no text.",
+      "normal": "timber-cedar-normal.png"
+    },
+    {
+      "file": "oak-floor.png",
+      "tileMetres": [
+        1.52,
+        1.52
+      ],
+      "description": "Light engineered oak floor, 190 mm planks, matt lacquer.",
+      "replacePrompt": "A seamless, tileable, top-down texture of light natural engineered oak flooring, 190 mm wide planks running top to bottom, 8 planks across, staggered joints, matt finish, flat even lighting, no text.",
+      "normal": "oak-floor-normal.png"
+    },
+    {
+      "file": "leaves-cluster.png",
+      "tileMetres": [
+        0.5,
+        0.5
+      ],
+      "description": "Leaf sprig on a transparent background, used on tree and shrub cards (alpha cut-out).",
+      "replacePrompt": "A single sprig of fresh green broadleaf foliage (about 25 leaves on a thin twig), isolated on a plain pure white background, photographed flat from above, even light. (Background must be removed to alpha before use.)"
+    },
+    {
+      "file": "grass-tuft.png",
+      "tileMetres": [
+        0.8,
+        0.8
+      ],
+      "description": "Ornamental grass tuft (Stipa-like) on a transparent background (alpha cut-out).",
+      "replacePrompt": "A single clump of ornamental grass (Stipa tenuissima), blond and green fine blades, isolated on a plain white background, side view, even light. (Background must be removed to alpha before use.)"
+    },
+    {
+      "file": "buxus.png",
+      "tileMetres": [
+        0.5,
+        0.5
+      ],
+      "description": "Clipped box (Buxus) foliage surface for topiary balls.",
+      "replacePrompt": "A seamless, tileable texture of a clipped box (Buxus) hedge surface, dense tiny glossy dark green leaves, flat even light, no text.",
+      "normal": "buxus-normal.png"
+    },
+    {
+      "file": "mulch.png",
+      "tileMetres": [
+        1.0,
+        1.0
+      ],
+      "description": "Dark bark mulch and soil for planted borders.",
+      "replacePrompt": "A seamless, tileable, top-down texture of dark composted bark mulch in a garden border, flat even light, no text.",
+      "normal": "mulch-normal.png"
+    }
+  ]
+}

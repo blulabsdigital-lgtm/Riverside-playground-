@@ -1,0 +1,394 @@
+{
+  "source": "assets/kitchen-art.js",
+  "exportedAt": "2026-10-12T17:40:36.848Z",
+  "cards": [
+    {
+      "id": "sage",
+      "name": "Sage Shaker with brass",
+      "style": "classic",
+      "also": "warm",
+      "tags": [
+        "Shaker",
+        "Painted",
+        "Brass"
+      ],
+      "wall": "#EDE6DA",
+      "wallName": "Warm white",
+      "doors": "shaker",
+      "unit": "#8E9C80",
+      "unitName": "sage green",
+      "upper": "shelves",
+      "shelf": "#B9895A",
+      "handles": "brass",
+      "handleShape": "cup",
+      "top": "marble",
+      "splash": "metro",
+      "splashColour": "#F3F1EC",
+      "cooker": "range",
+      "rangeColour": "#E6DDC8",
+      "hood": "canopy",
+      "sink": "belfast",
+      "floor": "oak",
+      "window": "white",
+      "decor": [
+        "plant",
+        "board"
+      ],
+      "rug": "#8A6F55"
+    },
+    {
+      "id": "ink",
+      "name": "Ink blue Shaker with island",
+      "style": "dark",
+      "also": "classic",
+      "tags": [
+        "Shaker",
+        "Island",
+        "Marble"
+      ],
+      "wall": "#E9E4DC",
+      "wallName": "Soft white",
+      "doors": "shaker",
+      "unit": "#28364C",
+      "unitName": "ink blue",
+      "upper": "units",
+      "handles": "brass",
+      "handleShape": "knob",
+      "top": "marble",
+      "splash": "marble",
+      "cooker": "hob",
+      "hood": "canopy",
+      "sink": "undermount",
+      "floor": "herringbone",
+      "led": true,
+      "island": {
+        "colour": "#28364C",
+        "doors": "shaker",
+        "stools": "oak"
+      },
+      "pendants": "globe",
+      "decor": []
+    },
+    {
+      "id": "white",
+      "name": "Crisp white handleless",
+      "style": "sleek",
+      "also": null,
+      "tags": [
+        "Handleless",
+        "Minimal",
+        "Waterfall island"
+      ],
+      "wall": "#F1F0EE",
+      "wallName": "Chalk white",
+      "doors": "slab",
+      "unit": "#F3F2EF",
+      "unitName": "matt white",
+      "upper": "units",
+      "handles": null,
+      "top": "quartz",
+      "splash": "plain",
+      "splashColour": "#E3E5E5",
+      "cooker": "hob",
+      "hood": "none",
+      "sink": "undermount",
+      "floor": "tiles",
+      "led": true,
+      "island": {
+        "colour": "#F3F2EF",
+        "doors": "slab",
+        "waterfall": true,
+        "stools": "black"
+      },
+      "pendants": "linear",
+      "pendantMetal": "black",
+      "decor": [
+        "vase"
+      ]
+    },
+    {
+      "id": "grey",
+      "name": "Soft grey with oak",
+      "style": "sleek",
+      "also": "warm",
+      "tags": [
+        "Slab doors",
+        "Oak worktop",
+        "Open shelves"
+      ],
+      "wall": "#E6E3DE",
+      "wallName": "Pale grey",
+      "doors": "slab",
+      "unit": "#A6A6A3",
+      "unitName": "dove grey",
+      "upper": "shelves",
+      "shelf": "#C08F5E",
+      "handles": "black",
+      "handleShape": "bar",
+      "top": "oak",
+      "splash": "zellige",
+      "splashColour": "#EEEBE4",
+      "cooker": "hob",
+      "hood": "chimney",
+      "hoodMetal": "black",
+      "sink": "undermount",
+      "floor": "tiles",
+      "floorColour": "#CFCAC2",
+      "window": "crittall",
+      "decor": [
+        "plant",
+        "jars"
+      ],
+      "rug": "#3A3B3D"
+    },
+    {
+      "id": "oak",
+      "name": "Warm oak and plaster",
+      "style": "warm",
+      "also": null,
+      "tags": [
+        "Fluted oak",
+        "Plaster hood",
+        "Terrazzo"
+      ],
+      "wall": "#DCC8B2",
+      "wallName": "Plaster pink",
+      "doors": "fluted",
+      "unit": "#C79A6B",
+      "unitName": "natural oak",
+      "upper": "shelves",
+      "shelf": "#C79A6B",
+      "handles": "brass",
+      "handleShape": "bar",
+      "top": "terrazzo",
+      "splash": "zellige",
+      "splashColour": "#D9B89B",
+      "cooker": "hob",
+      "hood": "canopy",
+      "hoodColour": "#D3BEA7",
+      "sink": "undermount",
+      "floor": "oak",
+      "floorColour": "#D2AE82",
+      "island": {
+        "colour": "#C79A6B",
+        "doors": "fluted",
+        "stools": "oak"
+      },
+      "pendants": "globe",
+      "decor": [
+        "vase"
+      ]
+    },
+    {
+      "id": "clay",
+      "name": "Clay and walnut",
+      "style": "warm",
+      "also": "dark",
+      "tags": [
+        "Walnut",
+        "Terracotta",
+        "Zellige tiles"
+      ],
+      "wall": "#B9785E",
+      "wallName": "Terracotta",
+      "doors": "slab",
+      "unit": "#6B4A33",
+      "unitName": "walnut",
+      "upper": "shelves",
+      "shelf": "#6B4A33",
+      "handles": "black",
+      "handleShape": "knob",
+      "top": "quartz",
+      "splash": "zellige",
+      "splashColour": "#E6DBC9",
+      "cooker": "hob",
+      "hood": "chimney",
+      "hoodMetal": "black",
+      "sink": "undermount",
+      "floor": "herringbone",
+      "floorColour": "#8E6644",
+      "window": "crittall",
+      "decor": [
+        "plant",
+        "board"
+      ],
+      "rug": "#D8C6A8"
+    },
+    {
+      "id": "forest",
+      "name": "Forest green and marble",
+      "style": "dark",
+      "also": "sleek",
+      "tags": [
+        "Deep green",
+        "Marble",
+        "Brass"
+      ],
+      "wall": "#E7E4DF",
+      "wallName": "Stone white",
+      "doors": "slab",
+      "unit": "#2F4A3A",
+      "unitName": "forest green",
+      "upper": "units",
+      "handles": "brass",
+      "handleShape": "bar",
+      "top": "marble",
+      "splash": "marble",
+      "cooker": "hob",
+      "hood": "none",
+      "sink": "undermount",
+      "floor": "herringbone",
+      "led": true,
+      "island": {
+        "colour": "#2F4A3A",
+        "doors": "slab",
+        "waterfall": true,
+        "stools": "brass"
+      },
+      "pendants": "dome",
+      "pendantMetal": "brass",
+      "decor": []
+    },
+    {
+      "id": "concrete",
+      "name": "Concrete and black steel",
+      "style": "industrial",
+      "also": "sleek",
+      "tags": [
+        "Concrete",
+        "Black steel",
+        "Metro tiles"
+      ],
+      "wall": "#BDB8B1",
+      "wallName": "Concrete grey",
+      "wallType": "concrete",
+      "doors": "slab",
+      "unit": "#3A3B3D",
+      "unitName": "charcoal",
+      "upper": "shelves",
+      "shelf": "#2A2A2B",
+      "shelfBrackets": true,
+      "handles": "black",
+      "handleShape": "bar",
+      "top": "concrete",
+      "splash": "metro",
+      "splashColour": "#F2F0EC",
+      "grout": "#3A3A3A",
+      "cooker": "hob",
+      "hood": "chimney",
+      "hoodMetal": "black",
+      "sink": "undermount",
+      "floor": "concrete",
+      "window": "crittall",
+      "island": {
+        "colour": "#3A3B3D",
+        "doors": "slab",
+        "waterfall": true,
+        "stools": "black"
+      },
+      "pendants": "dome",
+      "pendantMetal": "black",
+      "decor": [
+        "plant"
+      ]
+    },
+    {
+      "id": "cream",
+      "name": "Cream Shaker with range cooker",
+      "style": "classic",
+      "also": null,
+      "tags": [
+        "Shaker",
+        "Range cooker",
+        "Chequer floor"
+      ],
+      "wall": "#E3DED3",
+      "wallName": "Linen",
+      "doors": "shaker",
+      "unit": "#E8E1D0",
+      "unitName": "cream",
+      "upper": "units",
+      "handles": "chrome",
+      "handleShape": "cup",
+      "top": "oak",
+      "splash": "metro",
+      "splashColour": "#F7F5F0",
+      "cooker": "range",
+      "rangeColour": "#1F2B3C",
+      "hood": "canopy",
+      "sink": "belfast",
+      "floor": "checker",
+      "window": "white",
+      "decor": [
+        "board",
+        "plant"
+      ]
+    },
+    {
+      "id": "brick",
+      "name": "Brick and timber loft",
+      "style": "industrial",
+      "also": "warm",
+      "tags": [
+        "Exposed brick",
+        "Smoked oak",
+        "Range cooker"
+      ],
+      "wall": "#8E4E39",
+      "wallName": "Exposed brick",
+      "wallType": "brick",
+      "doors": "slab",
+      "unit": "#5B4636",
+      "unitName": "smoked oak",
+      "upper": "shelves",
+      "shelf": "#7A5A3F",
+      "shelfBrackets": true,
+      "handles": "black",
+      "handleShape": "bar",
+      "top": "nero",
+      "splash": "metro",
+      "splashColour": "#F2F0EC",
+      "grout": "#3A3A3A",
+      "cooker": "range",
+      "rangeColour": "#1E1E1F",
+      "hood": "chimney",
+      "hoodMetal": "black",
+      "sink": "undermount",
+      "floor": "darkwood",
+      "window": "crittall",
+      "island": {
+        "colour": "#1F1F21",
+        "doors": "fluted",
+        "top": "oak",
+        "stools": "black"
+      },
+      "pendants": "dome",
+      "pendantMetal": "black",
+      "decor": [
+        "plant"
+      ]
+    }
+  ],
+  "styles": {
+    "classic": {
+      "name": "Classic Shaker",
+      "blurb": "Timeless painted doors, warm metals and a kitchen that feels like the heart of the house."
+    },
+    "sleek": {
+      "name": "Sleek modern",
+      "blurb": "Clean lines, handleless doors and nothing out of place."
+    },
+    "warm": {
+      "name": "Warm minimal",
+      "blurb": "Natural timber, soft plaster tones and textured tiles. Calm, but never cold."
+    },
+    "dark": {
+      "name": "Dark and dramatic",
+      "blurb": "Deep colour, polished stone and brass that glows in the evening."
+    },
+    "industrial": {
+      "name": "Urban loft",
+      "blurb": "Concrete, black steel and brick. Honest materials with real character."
+    }
+  }
+}
