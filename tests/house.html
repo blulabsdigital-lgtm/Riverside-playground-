@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700&display=swap"><style>body{margin:0;background:#111;display:grid;grid-template-columns:repeat(3,420px);gap:8px;padding:8px;font-family:'Plus Jakarta Sans'}div{width:420px;height:226px;border-radius:10px;overflow:hidden;position:relative}b{position:absolute;left:6px;bottom:4px;color:#fff;font-size:12px;background:#0008;padding:2px 6px}</style></head><body>
+<script src="../assets/house.js"></script>
+<script>
+const cfgs=[
+ ['semi 0 hints',{type:'semi',depth:0,interactive:true,hints:{ext:true,loft:true,upper:true}}],
+ ['terrace 3m',{type:'terrace',depth:3,interactive:true,hints:{loft:true,upper:true}}],
+ ['semi 5 + loft',{type:'semi',depth:5,loft:true,interactive:true}],
+ ['detached 8 + upper + loft',{type:'detached',depth:8,upper:true,loft:true,interactive:true}],
+];
+for(let s=0;s<10;s++) cfgs.push(['stage '+s,{type:'semi',depth:5,build:{stage:s,complete:false}}]);
+cfgs.push(['complete',{type:'semi',depth:5,build:{stage:9,complete:true}}]);
+cfgs.forEach(([n,o])=>{const d=document.createElement('div');d.innerHTML=RVHouse.svg(o)+'<b>'+n+'</b>';document.body.appendChild(d)});
+</script></body></html>

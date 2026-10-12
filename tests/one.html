@@ -1,0 +1,3 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#111;display:flex;gap:10px;padding:10px}div{width:400px;height:500px;border-radius:16px;overflow:hidden}svg{width:100%;height:100%}</style></head><body>
+<script src="../assets/kitchen-art.js"></script>
+<script>const ids=(location.hash.slice(1)||'ink,cream').split(',');KitchenArt.CARDS.filter(c=>ids.includes(c.id)).forEach(c=>{const d=document.createElement('div');d.innerHTML=KitchenArt.svg(c);document.body.appendChild(d)});</script></body></html>

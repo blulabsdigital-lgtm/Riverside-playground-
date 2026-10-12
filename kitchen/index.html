@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1D1D1E">
+<title>Kitchen style match · Riverside</title>
+<meta name="description" content="Swipe through ten Riverside kitchens and find your kitchen style in 30 seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../assets/riverside.css">
+<style>
+/* Intro */
+.k-intro{display:grid;gap:26px;align-items:center;padding:8px 16px 48px;max-width:1080px;margin:0 auto}
+.k-intro-copy{display:flex;flex-direction:column;gap:6px}
+.k-intro-copy .rv-btn{margin-top:18px}
+.k-fan{position:relative;height:clamp(250px,62vw,420px);display:grid;place-items:center}
+.k-fan .k-mini{position:absolute;width:clamp(150px,40vw,250px);aspect-ratio:4/5;border-radius:18px;overflow:hidden;box-shadow:0 24px 50px -18px rgba(0,0,0,.8);border:1px solid var(--rv-line)}
+.k-fan .k-mini svg{width:100%;height:100%}
+.k-fan .k-mini:nth-child(1){transform:translateX(-46%) rotate(-11deg);animation:k-float 6s ease-in-out infinite}
+.k-fan .k-mini:nth-child(2){transform:translateX(46%) rotate(10deg);animation:k-float 6s -2s ease-in-out infinite}
+.k-fan .k-mini:nth-child(3){transform:rotate(-1deg);z-index:2;animation:k-float 6s -4s ease-in-out infinite}
+.k-fan .k-heart{position:absolute;z-index:3;right:calc(50% - clamp(75px,20vw,125px) - 8px);top:10%;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--rv-gold-hi),var(--rv-gold-deep));color:var(--rv-on-gold);animation:rv-pulse 2.2s infinite}
+@keyframes k-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@media (min-width:860px){.k-intro{grid-template-columns:1.05fr .95fr;padding-top:40px}.k-intro-copy{order:-1}.k-intro-copy .rv-btn{align-self:flex-start;min-width:240px}}
+
+/* Swipe */
+.k-swipe{display:flex;flex-direction:column;align-items:center;gap:14px;padding:4px 16px 28px}
+.k-progress{width:var(--k-w);display:flex;align-items:center;gap:12px;font-size:14px;font-weight:700;color:var(--rv-ink)}
+.k-bar{flex:1;height:6px;border-radius:99px;background:var(--rv-wash);overflow:hidden}
+.k-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rv-gold-deep),var(--rv-gold-hi));border-radius:99px;transition:width .35s}
+.k-undo{width:40px;height:40px;border-radius:50%;border:0;background:var(--rv-wash);color:var(--rv-body);display:grid;place-items:center;cursor:pointer}
+.k-undo[disabled]{opacity:.35;cursor:default}
+.k-stack{--k-w:min(380px,calc(100vw - 32px),calc((100vh - 330px) * .8));position:relative;width:var(--k-w);aspect-ratio:4/5;min-width:220px}
+.k-swipe{--k-w:min(380px,calc(100vw - 32px),calc((100vh - 330px) * .8))}
+.k-card{position:absolute;inset:0;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 30px 60px -24px rgba(0,0,0,.85);border:1px solid var(--rv-line);
+  touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;will-change:transform}
+.k-card:active{cursor:grabbing}
+.k-card.next{transform:scale(.94) translateY(14px);filter:brightness(.7);pointer-events:none}
+.k-card .k-art,.k-card .k-art svg,.k-card .k-art img{width:100%;height:100%;object-fit:cover}
+.k-cap{position:absolute;left:0;right:0;bottom:0;padding:60px 18px 18px;background:linear-gradient(180deg,rgba(15,15,16,0),rgba(15,15,16,.92) 55%);display:flex;flex-direction:column;gap:8px}
+.k-cap h3{font-size:clamp(19px,5vw,23px)}
+.k-cap .rv-row{gap:6px}
+.k-cap .rv-chip{background:rgba(255,255,255,.12);color:#F2EEE8;font-size:12px;padding:4px 9px}
+.k-stamp{position:absolute;top:22px;padding:7px 14px;border-radius:10px;font-weight:800;font-size:20px;letter-spacing:.06em;text-transform:uppercase;opacity:0;pointer-events:none;border:3px solid}
+.k-stamp.love{left:18px;color:var(--rv-gold-hi);border-color:var(--rv-gold-hi);transform:rotate(-10deg);background:rgba(29,29,30,.55)}
+.k-stamp.nope{right:18px;color:#F2EEE8;border-color:#F2EEE8;transform:rotate(10deg);background:rgba(29,29,30,.55)}
+.k-actions{display:flex;gap:28px;align-items:center;justify-content:center}
+.k-round{width:68px;height:68px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.k-round:active{transform:scale(.92)}
+.k-round.nope{background:var(--rv-wash);color:#F2EEE8;box-shadow:inset 0 0 0 1px var(--rv-line)}
+.k-round.love{width:78px;height:78px;background:linear-gradient(135deg,var(--rv-gold-hi),var(--rv-gold-deep));color:var(--rv-on-gold);box-shadow:0 14px 30px -10px var(--rv-glow)}
+.k-round svg{width:30px;height:30px}
+.k-hint{text-align:center}
+
+/* Building */
+.k-build{display:flex;flex-direction:column;align-items:center;gap:22px;padding:40px 16px 60px;text-align:center}
+.k-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:min(360px,100%)}
+.k-board div{aspect-ratio:4/5;border-radius:12px;overflow:hidden;animation:k-pop .5s cubic-bezier(.2,1.4,.4,1) both}
+.k-board svg{width:100%;height:100%}
+@keyframes k-pop{from{opacity:0;transform:translateY(40px) scale(.6) rotate(-6deg)}to{opacity:1;transform:none}}
+.k-build-msg{font-weight:700;color:var(--rv-ink);font-size:18px;min-height:28px}
+
+/* Result */
+.k-result{padding:6px 16px 60px;max-width:1120px;margin:0 auto}
+.k-res-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.k-hero{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--rv-line-gold);box-shadow:0 30px 70px -30px rgba(212,172,90,.35);aspect-ratio:4/5;max-height:72vh;margin:0 auto;width:100%}
+.k-hero-art{position:absolute;inset:0;animation:k-wipe 1.4s cubic-bezier(.6,0,.2,1) both}
+.k-hero-art svg{width:100%;height:100%}
+.k-hero::after{content:"";position:absolute;top:0;bottom:0;width:3px;background:var(--rv-gold-hi);box-shadow:0 0 24px 6px rgba(237,208,142,.6);animation:k-sweep 1.4s cubic-bezier(.6,0,.2,1) both;pointer-events:none}
+@keyframes k-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes k-sweep{from{left:0;opacity:1}90%{opacity:1}to{left:100%;opacity:0}}
+.k-hero-tag{position:absolute;left:14px;top:14px;z-index:2;font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--rv-on-gold);background:var(--rv-gold);padding:6px 11px;border-radius:999px}
+.k-res-body{display:flex;flex-direction:column;gap:20px;min-width:0}
+.k-res-body h1{margin:4px 0 0}
+.k-twist{color:var(--rv-gold-hi);font-weight:700;font-size:17px;margin-top:-4px}
+.k-match{display:flex;flex-direction:column;gap:10px}
+.k-match-row{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:4px 12px;align-items:center;font-size:14.5px;font-weight:700;color:var(--rv-ink)}
+.k-match-row span:last-child{text-align:right;color:var(--rv-gold-hi)}
+.k-match-row .k-track{grid-column:1/-1;height:8px;border-radius:99px;background:var(--rv-wash);overflow:hidden}
+.k-match-row .k-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--rv-gold-deep),var(--rv-gold-hi));transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.k-match-row:not(:first-child) .k-track i{background:#5A564F}
+.k-dna{display:flex;flex-direction:column;gap:16px}
+.k-swatches{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.k-sw{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--rv-body);min-width:0}
+.k-sw i{display:block;aspect-ratio:1;border-radius:14px;border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 -10px 20px rgba(0,0,0,.15)}
+.k-sw span{overflow-wrap:anywhere;line-height:1.25}
+.k-spec{display:grid;gap:0;border-top:1px solid var(--rv-line)}
+.k-spec div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--rv-line);font-size:15px}
+.k-spec b{color:var(--rv-muted);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.k-spec span{color:var(--rv-ink);font-weight:600}
+.k-loved{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.k-loved div{flex:none;width:72px;aspect-ratio:4/5;border-radius:10px;overflow:hidden;border:1px solid var(--rv-line)}
+.k-loved svg{width:100%;height:100%}
+.k-label{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rv-muted)}
+.k-size{display:flex;flex-direction:column;gap:14px;border-color:var(--rv-line-gold)}
+.k-size .rv-tile{flex-direction:row;align-items:center;gap:12px}
+.k-size .rv-tile svg{flex:none;width:38px;height:38px;color:var(--rv-gold)}
+.k-size .rv-tile div{display:flex;flex-direction:column;min-width:0}
+.k-price{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:16px;background:var(--rv-panel);animation:rv-in .45s both}
+.k-price .rv-btn{margin-top:10px}
+@media (min-width:900px){
+  .k-res-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:40px}
+  .k-hero{position:sticky;top:20px;max-height:none}
+}
+</style>
+</head>
+<body>
+<div class="rv-demo"><b>Demo</b> · Kitchen style match for Riverside · nothing is sent to Alex</div>
+<header class="rv-top" id="top"></header>
+<main id="app" aria-live="polite"></main>
+<p class="rv-sr" id="announce" aria-live="assertive"></p>
+<script src="../assets/riverside.js"></script>
+<script src="../assets/kitchen-art.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const OUT = process.argv[2], W = +(process.argv[3] || 390), H = +(process.argv[4] || 844);
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: false });
+  const errs = [];
+  p.on('pageerror', e => errs.push('pageerror: ' + e.message));
+  p.on('console', m => { if (m.type() === 'error' && !/website-files/.test(m.text())) errs.push('console: ' + m.text()); });
+  const overflow = async (tag) => { const o = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth); if (o > 0) errs.push(tag + ': horizontal overflow ' + o + 'px'); };
+  await p.goto('http://127.0.0.1:8765/kitchen/', { waitUntil: 'load' });
+  await p.waitForTimeout(500); await overflow('intro');
+  await p.screenshot({ path: OUT + '-1-intro.png' });
+  await p.click('#go'); await p.waitForTimeout(400); await overflow('swipe');
+  // drag the first card right
+  const box = await p.locator('.k-card.top').boundingBox();
+  await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await p.mouse.down();
+  await p.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 + 10, { steps: 5 });
+  await p.screenshot({ path: OUT + '-2-drag.png' });
+  await p.mouse.move(box.x + box.width / 2 + 180, box.y + box.height / 2 + 20, { steps: 5 });
+  await p.mouse.up(); await p.waitForTimeout(450);
+  const picks = [false, true, false, true, true, false, true, false, true]; // cards 2..10
+  for (const love of picks) { await p.click(love ? '#love' : '#nope'); await p.waitForTimeout(380); }
+  await p.waitForTimeout(800);
+  await p.screenshot({ path: OUT + '-3-building.png' });
+  await p.waitForTimeout(2600); await overflow('result');
+  await p.screenshot({ path: OUT + '-4-result.png', fullPage: true });
+  await p.click('[data-size="large"]'); await p.waitForTimeout(700);
+  await p.screenshot({ path: OUT + '-5-price.png' });
+  await p.click('#book'); await p.waitForTimeout(500);
+  await p.screenshot({ path: OUT + '-6-form.png' });
+  await p.click('#rv-f-name'); await p.click('button[type=submit]'); await p.waitForTimeout(200);
+  const errText = await p.locator('.rv-err').allTextContents();
+  await p.click('[data-demo]'); await p.click('button[type=submit]'); await p.waitForTimeout(900);
+  await overflow('sheet');
+  const panel = p.locator('.rv-sheet-panel');
+  await panel.screenshot({ path: OUT + '-7-pack.png' });
+  const panelH = await panel.evaluate(el => el.scrollHeight);
+  await panel.evaluate(el => el.scrollTop = el.scrollHeight);
+  await p.waitForTimeout(200);
+  await panel.screenshot({ path: OUT + '-8-pack-end.png' });
+  await p.evaluate(() => { const s = document.querySelector('.rv-sheet'); s.style.position = 'absolute'; s.style.alignItems = 'flex-start'; const pn = s.firstChild; pn.style.maxHeight = 'none'; pn.style.animation = 'none'; document.querySelectorAll('.rv-confetti').forEach(c => c.remove()); });
+  await p.waitForTimeout(150);
+  await panel.screenshot({ path: OUT + '-9-pack-full.png' });
+  const wa = await p.locator('.rv-wa-bubble').innerText();
+  console.log('validation:', JSON.stringify(errText));
+  console.log('panel scrollHeight', panelH);
+  console.log('--- whatsapp ---\n' + wa);
+  console.log(errs.length ? errs.join('\n') : 'no errors');
+  await b.close();
+})();

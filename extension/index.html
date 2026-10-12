@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1D1D1E">
+<title>Grow your home · Riverside</title>
+<meta name="description" content="Drag to build an extension or add a loft, and see the extra space, a guide price, the time on site and the planning route.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../assets/riverside.css">
+<style>
+/* House picker */
+.g-pick{padding:8px 16px 56px;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.g-pick .rv-lead{margin-bottom:18px}
+.g-houses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.g-house{appearance:none;border:1px solid var(--rv-line);background:var(--rv-card);border-radius:18px;padding:14px 10px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:var(--rv-ink);transition:border-color .15s,transform .15s,background .15s;-webkit-tap-highlight-color:transparent;min-width:0}
+.g-house:hover{border-color:var(--rv-line-gold);background:var(--rv-hover)}
+.g-house:active{transform:scale(.97)}
+.g-house svg{width:100%;height:auto}
+.g-house b{font-size:15px;line-height:1.2;text-align:center}
+.g-house small{font-size:12.5px;color:var(--rv-muted);text-align:center;line-height:1.3}
+.g-demo{position:relative;margin-top:22px;border-radius:20px;overflow:hidden;border:1px solid var(--rv-line);aspect-ratio:420/226;background:#0E0F11}
+.g-demo #demoArt,.g-demo svg{width:100%;height:100%}
+.g-demo-cap{position:absolute;left:12px;top:12px;font-size:12.5px;font-weight:800;color:var(--rv-on-gold);background:var(--rv-gold);border-radius:999px;padding:5px 11px}
+
+/* Builder */
+.g-build{padding:0 0 56px;max-width:1180px;margin:0 auto}
+.g-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.g-head{display:flex;flex-direction:column;gap:8px;padding:0 16px}
+.g-head .rv-row{gap:8px}
+.g-head h2{transition:opacity .2s}
+.g-stage{position:relative;background:#0E0F11;aspect-ratio:420/226;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
+.g-stage svg{width:100%;height:100%;display:block}
+.g-stage.dragging{cursor:ew-resize}
+.g-depth{position:absolute;left:12px;top:12px;font-size:13px;font-weight:800;color:var(--rv-on-gold);background:var(--rv-gold);border-radius:999px;padding:5px 11px;opacity:0;transition:opacity .2s;pointer-events:none}
+.g-depth.on{opacity:1}
+.g-panel{display:flex;flex-direction:column;gap:16px;padding:0 16px}
+.g-controls{display:flex;flex-direction:column;gap:12px}
+.g-range{display:flex;flex-direction:column;gap:6px}
+.g-range label{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--rv-ink)}
+.g-range label span{color:var(--rv-gold-hi)}
+.g-range input{width:100%;accent-color:var(--rv-gold);height:32px;margin:0}
+.g-toggles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g-toggle{appearance:none;border:1px solid var(--rv-line);background:var(--rv-wash);color:var(--rv-ink);border-radius:14px;min-height:50px;padding:10px 12px;font-weight:700;font-size:15px;
+  display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left}
+.g-toggle i{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--rv-gold);color:var(--rv-on-gold)}
+.g-toggle i svg{width:14px;height:14px}
+.g-toggle[aria-pressed="true"]{border-color:var(--rv-gold);background:var(--rv-hover)}
+.g-toggle[aria-pressed="true"] i{background:transparent;color:var(--rv-gold);box-shadow:inset 0 0 0 2px var(--rv-gold)}
+.g-toggle[disabled]{opacity:.4;cursor:not-allowed}
+.g-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g-stat{background:var(--rv-card);border:1px solid var(--rv-line);border-radius:16px;padding:13px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.g-stat b{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--rv-muted)}
+.g-stat strong{font-size:clamp(20px,5.4vw,26px);font-weight:800;color:var(--rv-ink);line-height:1.15;letter-spacing:-.01em;white-space:nowrap}
+.g-stat strong sup{font-size:.55em}
+.g-stat.big{border-color:var(--rv-line-gold)}
+.g-badge{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:800;line-height:1.2;color:var(--rv-ink)}
+.g-badge::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--c,var(--rv-muted));box-shadow:0 0 0 4px color-mix(in srgb,var(--c,#888) 25%,transparent)}
+.g-idea{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,rgba(212,172,90,.16),rgba(212,172,90,.04));border:1px solid var(--rv-line-gold);color:var(--rv-ink);font-weight:700;font-size:16px;line-height:1.35}
+.g-idea svg{flex:none;width:26px;height:26px;color:var(--rv-gold)}
+.g-plan{font-size:14.5px;color:var(--rv-body);display:flex;flex-direction:column;gap:8px}
+.g-plan details{background:var(--rv-card);border:1px solid var(--rv-line);border-radius:14px;padding:12px 14px}
+.g-plan summary{cursor:pointer;font-weight:700;color:var(--rv-ink);list-style-position:inside}
+.g-plan ul{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.g-plan p{font-size:13.5px;color:var(--rv-muted);margin-top:8px}
+@media (min-width:960px){
+  .g-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);align-items:start;gap:28px;padding:0 16px}
+  .g-head{grid-column:1/-1;padding:0}
+  .g-stage{border-radius:22px;border:1px solid var(--rv-line);position:sticky;top:16px}
+  .g-panel{padding:0}
+}
+</style>
+</head>
+<body>
+<div class="rv-demo"><b>Demo</b> · Grow your home for Riverside · nothing is sent to Alex</div>
+<header class="rv-top" id="top"></header>
+<main id="app"></main>
+<p class="rv-sr" id="announce" aria-live="polite"></p>
+<script src="../assets/riverside.js"></script>
+<script src="../assets/house.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
