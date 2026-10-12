@@ -11,13 +11,16 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions';
-const MODELS = ['gemini-3.1-flash-image', 'gemini-3-pro-image'];
+// Nano Banana 2.1 is Google's recommended image model from 6 Oct 2026 (about half the price of Nano Banana 2).
+// If it is not available on this key, the runner falls back to Nano Banana 2.
+const MODELS = ['gemini-nano-banana-2.1', 'gemini-3.1-flash-image', 'gemini-3-pro-image'];
+const FALLBACK = 'gemini-3.1-flash-image';
 const SIZES = ['1K', '2K'];
 const ASPECTS = ['1:1', '2:3', '3:2', '3:4', '4:3', '4:5', '5:4', '9:16', '16:9', '21:9'];
 const MAX_ITEMS = 12;
 const TIMEOUT_MS = 120000;
 // Rough cost per image in US dollars, for the summary only. Check Google's pricing page for current figures.
-const COST = { 'gemini-3.1-flash-image': 0.07, 'gemini-3-pro-image': 0.14 };
+const COST = { 'gemini-nano-banana-2.1': 0.035, 'gemini-3.1-flash-image': 0.07, 'gemini-3-pro-image': 0.14 };
 
 const job = process.argv[2] || '';
 const outDir = process.env.OUT_DIR || 'lab-out';
@@ -27,7 +30,7 @@ async function main() {
   if (!/^[a-z0-9][a-z0-9-]{0,40}$/.test(job)) throw new Error('Job name must be lower-case letters, numbers and hyphens.');
   await mkdir(outDir, { recursive: true });
   const spec = JSON.parse(await readFile(join('lab', 'jobs', job, 'job.json'), 'utf8'));
-  const model = MODELS.includes(spec.model) ? spec.model : MODELS[0];
+  let model = MODELS.includes(spec.model) ? spec.model : MODELS[0];
   const size = SIZES.includes(spec.size) ? spec.size : '1K';
   const think = spec.think === 'high' ? 'high' : 'minimal';
   const items = (spec.items || []).slice(0, MAX_ITEMS);
@@ -56,20 +59,20 @@ async function main() {
       input.push({ type: 'text', text: String(item.prompt || '') });
       const aspect = ASPECTS.includes(item.aspect) ? item.aspect : undefined;
       const body = {
-        model,
+        model: null,
         input,
         response_format: { type: 'image', mime_type: 'image/jpeg', image_size: size, ...(aspect ? { aspect_ratio: aspect } : {}) },
         generation_config: { thinking_level: think },
       };
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        signal: ctrl.signal,
-      }).finally(() => clearTimeout(timer));
-      const text = await res.text();
+      let { res, text } = await call({ ...body, model });
+      // Unknown model on this key: switch to Nano Banana 2 for the rest of the job
+      if ((res.status === 404 || (res.status === 400 && /model/i.test(text))) && model !== FALLBACK) {
+        console.log(`${model} unavailable (${res.status}); falling back to ${FALLBACK}`);
+        summary.fallbackFrom = model;
+        model = FALLBACK;
+        summary.model = model;
+        ({ res, text } = await call({ ...body, model }));
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 300)}`);
       const img = findImage(JSON.parse(text));
       if (!img) throw new Error('No image in the response: ' + findText(JSON.parse(text)).slice(0, 300));
@@ -86,6 +89,22 @@ async function main() {
   summary.finishedAt = new Date().toISOString();
   summary.estimatedCostUsd = Math.round(summary.estimatedCostUsd * 100) / 100;
   await writeFile(join(outDir, 'summary.json'), JSON.stringify(summary, null, 2));
+}
+
+async function call(body) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+    return { res, text: await res.text() };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function findImage(data) {
