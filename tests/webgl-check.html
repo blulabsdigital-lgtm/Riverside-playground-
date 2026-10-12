@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#111}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"../assets/vendor/three/three.module.min.js","three/addons/":"../assets/vendor/three/"}}</script></head><body>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/OrbitControls.js';
+const r = new THREE.WebGLRenderer({ antialias: true }); r.setSize(400, 300); r.shadowMap.enabled = true; document.body.appendChild(r.domElement);
+const s = new THREE.Scene(); s.background = new THREE.Color('#1d1d1e');
+const c = new THREE.PerspectiveCamera(40, 4/3, 0.1, 100); c.position.set(6, 5, 8); c.lookAt(0, 1, 0);
+new OrbitControls(c, r.domElement);
+const l = new THREE.DirectionalLight('#ffe0b0', 2.5); l.position.set(5, 8, 3); l.castShadow = true; s.add(l, new THREE.HemisphereLight('#8090a0', '#202018', 1));
+const box = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshStandardMaterial({ color: '#D4AC5A' })); box.position.y = 1; box.castShadow = true; s.add(box);
+const g = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: '#2c3627' })); g.rotation.x = -Math.PI/2; g.receiveShadow = true; s.add(g);
+r.render(s, c); window.ok = r.getContext().getParameter(r.getContext().RENDERER);
+</script></body></html>

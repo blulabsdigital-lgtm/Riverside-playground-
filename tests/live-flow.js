@@ -7,7 +7,7 @@ const OUT = process.argv[2];
   const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
   p.on('pageerror', e => errs.push('pageerror: ' + e.message));
   p.on('console', m => { if (m.type() === 'error' && !/ERR_TUNNEL/.test(m.text())) errs.push('console: ' + m.text()); });
-  await p.goto('http://127.0.0.1:8765/live/', { waitUntil: 'load' });
+  await p.goto((process.env.BASE || 'http://127.0.0.1:8765') + '/live/', { waitUntil: 'load' });
   await p.evaluate(() => localStorage.clear()); await p.reload({ waitUntil: 'load' });
   await p.waitForTimeout(500);
   await p.screenshot({ path: OUT + '-1-desktop.png' });
@@ -27,7 +27,7 @@ const OUT = process.argv[2];
   // Mobile: tabs
   const m = await b.newPage({ viewport: { width: 390, height: 844 } });
   m.on('pageerror', e => errs.push('m pageerror: ' + e.message));
-  await m.goto('http://127.0.0.1:8765/live/', { waitUntil: 'load' });
+  await m.goto((process.env.BASE || 'http://127.0.0.1:8765') + '/live/', { waitUntil: 'load' });
   await m.evaluate(() => localStorage.clear()); await m.reload({ waitUntil: 'load' }); await m.waitForTimeout(400);
   const o1 = await m.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   await m.screenshot({ path: OUT + '-5-mobile-cust.png', fullPage: true });

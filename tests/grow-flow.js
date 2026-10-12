@@ -7,7 +7,7 @@ const OUT = process.argv[2], W = +(process.argv[3] || 390), H = +(process.argv[4
   p.on('pageerror', e => errs.push('pageerror: ' + e.message));
   p.on('console', m => { if (m.type() === 'error' && !/ERR_TUNNEL/.test(m.text())) errs.push('console: ' + m.text()); });
   const overflow = async (tag) => { const o = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth); if (o > 0) errs.push(tag + ': horizontal overflow ' + o + 'px'); };
-  await p.goto('http://127.0.0.1:8765/extension/', { waitUntil: 'load' });
+  await p.goto((process.env.BASE || 'http://127.0.0.1:8765') + '/extension/', { waitUntil: 'load' });
   await p.waitForTimeout(500); await overflow('pick');
   await p.screenshot({ path: OUT + '-1-pick.png' });
   await p.click('[data-type="semi"]'); await p.waitForTimeout(500); await overflow('builder');
