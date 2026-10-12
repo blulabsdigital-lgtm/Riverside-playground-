@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>House 3D harness · Riverside</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#1D1D1E;overflow:hidden}
+#stage{position:relative;width:100vw;height:100vh;background:#0E0F11}
+#err{position:absolute;left:16px;top:16px;color:#FF8A80;font:600 14px/1.4 "Plus Jakarta Sans",system-ui,sans-serif}
+</style>
+<script type="importmap">{"imports":{"three":"../assets/vendor/three/three.module.min.js","three/addons/":"../assets/vendor/three/"}}</script>
+</head>
+<body>
+<div id="stage"></div>
+<script type="module">
+/* One 3D house, full size. Query: type, depth, upper, loft, hints, interactive, autorotate, stage, complete, w, h, view (theta,phi), scroll */
+import { createHouse3D, isWebGLAvailable } from '../assets/house3d.js';
+const q = new URLSearchParams(location.search);
+const num = (k, d) => (q.has(k) ? +q.get(k) : d);
+const bool = (k, d) => (q.has(k) ? !/^(0|false|no)$/i.test(q.get(k)) : d);
+const el = document.getElementById('stage');
+if (q.has('w')) el.style.width = num('w') + 'px';
+if (q.has('h')) el.style.height = num('h') + 'px';
+// scroll=1: put the house in a tall page to check that vertical swipes still scroll
+if (bool('scroll', false)) {
+  for (const n of [document.documentElement, document.body]) { n.style.overflow = 'visible'; n.style.height = 'auto'; }
+  el.insertAdjacentHTML('afterend', '<div style="height:2000px"></div>');
+}
+const opts = {
+  type: q.get('type') || 'semi', depth: num('depth', 0), upper: bool('upper', false), loft: bool('loft', false),
+  hints: bool('hints', false), interactive: bool('interactive', true), autoRotate: bool('autorotate', false), view: q.has('view') ? { theta: +q.get('view').split(',')[0], phi: +q.get('view').split(',')[1] } : undefined
+};
+if (q.has('stage') || q.has('complete')) opts.build = { stage: num('stage', 0), complete: bool('complete', false) };
+window.__events = [];
+window.__webgl = isWebGLAvailable();
+try {
+  const h = createHouse3D(el, opts);
+  window.__house = h;
+  ['depth', 'change', 'toggle', 'blocked'].forEach(ev => h.on(ev, a => window.__events.push([ev, a])));
+  h.on('ready', () => { window.__ready = true; });
+} catch (e) {
+  window.__error = e.message;
+  document.getElementById('err') || el.insertAdjacentHTML('beforeend', '<p id="err"></p>');
+  document.getElementById('err').textContent = e.message;
+  window.__ready = true;
+}
+</script>
+</body>
+</html>
