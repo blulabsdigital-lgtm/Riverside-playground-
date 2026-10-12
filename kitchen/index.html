@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1D1D1E">
 <title>Kitchen style match · Riverside</title>
-<meta name="description" content="Swipe through ten Riverside kitchens and find your kitchen style in 30 seconds.">
+<meta name="description" content="Add a photo of your kitchen, swipe through ten Riverside kitchens and find your kitchen style in 30 seconds.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -15,7 +15,12 @@
 /* Intro */
 .k-intro{display:grid;gap:26px;align-items:center;padding:8px 16px 48px;max-width:1080px;margin:0 auto}
 .k-intro-copy{display:flex;flex-direction:column;gap:6px}
-.k-intro-copy .rv-btn{margin-top:18px}
+.k-intro-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.k-safe{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--rv-muted)}
+.k-safe svg{flex:none;margin-top:2px;color:var(--rv-gold)}
+.k-skip{align-self:flex-start;padding:8px 0;min-height:44px}
+.k-photo-err{font-size:14px;color:var(--rv-err)}
+.k-photo-err:empty{display:none}
 .k-fan{position:relative;height:clamp(250px,62vw,420px);display:grid;place-items:center}
 .k-fan .k-mini{position:absolute;width:clamp(150px,40vw,250px);aspect-ratio:4/5;border-radius:18px;overflow:hidden;box-shadow:0 24px 50px -18px rgba(0,0,0,.8);border:1px solid var(--rv-line)}
 .k-fan .k-mini svg{width:100%;height:100%}
@@ -25,7 +30,54 @@
 .k-fan .k-heart{position:absolute;z-index:3;right:calc(50% - clamp(75px,20vw,125px) - 8px);top:10%;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
   background:linear-gradient(135deg,var(--rv-gold-hi),var(--rv-gold-deep));color:var(--rv-on-gold);animation:rv-pulse 2.2s infinite}
 @keyframes k-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
-@media (min-width:860px){.k-intro{grid-template-columns:1.05fr .95fr;padding-top:40px}.k-intro-copy{order:-1}.k-intro-copy .rv-btn{align-self:flex-start;min-width:240px}}
+@media (min-width:860px){.k-intro{grid-template-columns:1.05fr .95fr;padding-top:40px}.k-intro-copy{order:-1}.k-intro-actions .rv-btn{align-self:flex-start;width:auto;min-width:300px}}
+
+/* Photo added */
+.k-got{display:flex;flex-direction:column;align-items:center;gap:22px;padding:24px 16px 60px;text-align:center;cursor:pointer}
+.k-got-frame{position:relative;width:min(100%,460px,calc(50vh * var(--ar)));aspect-ratio:var(--ar);border-radius:22px;overflow:hidden;border:1px solid var(--rv-line-gold);
+  box-shadow:0 30px 70px -30px rgba(212,172,90,.4);animation:k-pop .55s cubic-bezier(.2,1.4,.4,1) both}
+.k-got-frame img{width:100%;height:100%;object-fit:cover}
+.k-got-tick{position:absolute;right:12px;top:12px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--rv-on-gold);
+  background:linear-gradient(135deg,var(--rv-gold-hi),var(--rv-gold-deep));animation:k-pop .45s .3s cubic-bezier(.2,1.4,.4,1) both,rv-pulse 1.6s .8s 2}
+.k-got h1{font-size:clamp(25px,5.6vw,36px);max-width:15em;margin:0}
+
+/* Their photo being read: slow gold scan */
+.k-scan{--ar:4/3;position:relative;width:min(100%,calc(46vh * var(--ar)));aspect-ratio:var(--ar);border-radius:22px;overflow:hidden;background:#000;
+  border:1px solid var(--rv-line-gold);box-shadow:0 30px 70px -30px rgba(212,172,90,.4)}
+.k-scan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.75) brightness(.72)}
+.k-scan::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,rgba(212,172,90,0) 40%,rgba(212,172,90,.16));animation:k-breathe 3.2s ease-in-out infinite}
+.k-scan-band{position:absolute;left:0;right:0;top:0;height:40%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(237,208,142,0),rgba(237,208,142,.08) 55%,rgba(237,208,142,.34) 94%,rgba(255,242,208,.9));
+  animation:k-scan 4.4s cubic-bezier(.45,0,.55,1) infinite}
+.k-scan-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#FFF3D6;box-shadow:0 0 18px 4px rgba(237,208,142,.75)}
+.k-scan-corners i{position:absolute;width:26px;height:26px;border:2.5px solid var(--rv-gold-hi);opacity:.95}
+.k-scan-corners i:nth-child(1){left:12px;top:12px;border-right:0;border-bottom:0;border-top-left-radius:9px}
+.k-scan-corners i:nth-child(2){right:12px;top:12px;border-left:0;border-bottom:0;border-top-right-radius:9px}
+.k-scan-corners i:nth-child(3){left:12px;bottom:12px;border-right:0;border-top:0;border-bottom-left-radius:9px}
+.k-scan-corners i:nth-child(4){right:12px;bottom:12px;border-left:0;border-top:0;border-bottom-right-radius:9px}
+@keyframes k-scan{from{transform:translateY(-100%)}to{transform:translateY(172%)}}
+@keyframes k-breathe{0%,100%{opacity:.5}50%{opacity:1}}
+.k-msg.in{animation:k-msg .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes k-msg{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Waiting for the engine */
+.k-wait{display:grid;gap:22px;padding:8px 16px 48px;max-width:1120px;margin:0 auto}
+.k-wait-photo{display:flex;justify-content:center;min-width:0}
+.k-wait-copy{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;min-width:0}
+.k-wait-msg{font-size:clamp(21px,5vw,28px);line-height:1.2;font-weight:800;color:var(--rv-ink);min-height:1.25em}
+.k-wait-bar{width:min(320px,100%);height:6px;border-radius:99px;background:var(--rv-wash);overflow:hidden}
+.k-wait-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--rv-gold-deep),var(--rv-gold-hi));transition:width .45s linear}
+.k-wait-loved{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;margin-top:12px}
+.k-wait-board{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:min(400px,100%)}
+.k-wait-board div{flex:none;width:calc((100% - 24px) / 5);aspect-ratio:4/5;border-radius:10px;overflow:hidden;border:1px solid var(--rv-line);animation:k-pop .5s cubic-bezier(.2,1.4,.4,1) both}
+.k-wait-board svg{width:100%;height:100%}
+@media (min-width:860px){
+  .k-wait{grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);align-items:center;gap:44px;padding-top:30px}
+  .k-wait .k-scan{width:min(100%,calc(66vh * var(--ar)))}
+  .k-wait-copy,.k-wait-loved{align-items:flex-start;text-align:left}
+  .k-wait-board{justify-content:flex-start;width:100%}
+  .k-wait-board div{width:calc((100% - 18px) / 4)}
+}
 
 /* Swipe */
 .k-swipe{display:flex;flex-direction:column;align-items:center;gap:14px;padding:4px 16px 28px}
@@ -67,13 +119,49 @@
 /* Result */
 .k-result{padding:6px 16px 60px;max-width:1120px;margin:0 auto}
 .k-res-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.k-hero-col{display:flex;flex-direction:column;gap:12px;min-width:0}
 .k-hero{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--rv-line-gold);box-shadow:0 30px 70px -30px rgba(212,172,90,.35);aspect-ratio:4/5;max-height:72vh;margin:0 auto;width:100%}
 .k-hero-art{position:absolute;inset:0;animation:k-wipe 1.4s cubic-bezier(.6,0,.2,1) both}
 .k-hero-art svg{width:100%;height:100%}
 .k-hero::after{content:"";position:absolute;top:0;bottom:0;width:3px;background:var(--rv-gold-hi);box-shadow:0 0 24px 6px rgba(237,208,142,.6);animation:k-sweep 1.4s cubic-bezier(.6,0,.2,1) both;pointer-events:none}
 @keyframes k-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 @keyframes k-sweep{from{left:0;opacity:1}90%{opacity:1}to{left:100%;opacity:0}}
-.k-hero-tag{position:absolute;left:14px;top:14px;z-index:2;font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--rv-on-gold);background:var(--rv-gold);padding:6px 11px;border-radius:999px}
+.k-hero-tag{position:absolute;left:14px;top:14px;z-index:4;font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--rv-on-gold);background:var(--rv-gold);padding:6px 11px;border-radius:999px;transition:background .2s,color .2s}
+.k-hero.seen .k-hero-art,.k-hero.seen .k-after{animation:none}
+.k-hero.seen::after{display:none}
+/* Their kitchen redesigned, with their photo underneath for press and hold */
+.k-hero.k-ai{aspect-ratio:var(--ar);background:#000}
+.k-ai>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;-webkit-user-select:none;user-select:none}
+.k-ai .k-after{animation:k-wipe 1.5s .35s cubic-bezier(.6,0,.2,1) both;transition:opacity .22s}
+.k-ai::after{animation-delay:.35s;animation-duration:1.5s;z-index:3}
+.k-ai.holding .k-after{opacity:0}
+.k-ai.holding .k-hero-tag{background:rgba(21,21,22,.82);color:#FFFFFF}
+.k-hold{position:absolute;left:50%;bottom:14px;z-index:4;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;max-width:calc(100% - 28px);
+  min-height:46px;padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:rgba(21,21,22,.74);color:#FFFFFF;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-weight:700;font-size:14.5px;white-space:nowrap;cursor:pointer;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s,transform .15s}
+.k-hold svg{flex:none}
+.k-hold span{overflow:hidden;text-overflow:ellipsis}
+.k-ai.holding .k-hold{background:var(--rv-gold);color:var(--rv-on-gold);border-color:var(--rv-gold);transform:translateX(-50%) scale(.97)}
+.k-working::after{display:none}
+.k-working .k-scan{position:absolute;inset:0;width:auto;border:0;border-radius:0;box-shadow:none;aspect-ratio:auto}
+.k-working-msg{position:absolute;left:50%;bottom:16px;z-index:4;transform:translateX(-50%);max-width:calc(100% - 28px);padding:9px 16px;border-radius:999px;
+  background:rgba(21,21,22,.74);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#FFFFFF;font-weight:700;font-size:15px;white-space:nowrap}
+.k-working-msg.in{animation:k-msg-c .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes k-msg-c{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translateX(-50%)}}
+.k-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--rv-wash);align-self:center;max-width:100%}
+.k-tabs button{appearance:none;border:0;background:none;color:var(--rv-body);font-weight:700;font-size:14.5px;padding:9px 18px;min-height:42px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.k-tabs button[aria-selected="true"]{background:var(--rv-raise);color:var(--rv-gold-hi);box-shadow:inset 0 0 0 1px var(--rv-line-gold)}
+.k-hero-cap{font-size:13.5px;line-height:1.45;color:var(--rv-muted);text-align:center;max-width:440px;align-self:center}
+/* Their photo next to the illustrated design */
+.k-today{position:absolute;right:12px;bottom:12px;z-index:4;width:min(36%,180px);margin:0;border-radius:12px;overflow:hidden;background:#000;
+  border:2px solid rgba(255,255,255,.88);box-shadow:0 14px 30px -8px rgba(0,0,0,.75);animation:k-pop .5s 1.45s cubic-bezier(.2,1.4,.4,1) both}
+.k-today img{width:100%;object-fit:cover}
+.k-today figcaption{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 6px;font-size:11.5px;font-weight:800;line-height:1.2;color:#FFFFFF;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.8))}
+.k-note{display:flex;flex-wrap:wrap;align-items:center;gap:2px 12px;padding:12px 14px;border-radius:14px;background:var(--rv-panel);border:1px solid var(--rv-line);
+  font-size:14.5px;line-height:1.45;color:var(--rv-body)}
+.k-note .rv-link{padding:6px 0;font-size:14.5px;color:var(--rv-gold-hi)}
+.k-note .rv-link[disabled]{opacity:.6;cursor:default}
 .k-res-body{display:flex;flex-direction:column;gap:20px;min-width:0}
 .k-res-body h1{margin:4px 0 0}
 .k-twist{color:var(--rv-gold-hi);font-weight:700;font-size:17px;margin-top:-4px}
@@ -102,9 +190,26 @@
 .k-size .rv-tile div{display:flex;flex-direction:column;min-width:0}
 .k-price{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:16px;background:var(--rv-panel);animation:rv-in .45s both}
 .k-price .rv-btn{margin-top:10px}
+/* What Alex receives */
+.k-pack-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.k-pack-cell{display:flex;flex-direction:column;gap:8px;min-width:0}
+.k-pack-fig{border-radius:12px;overflow:hidden;border:1px solid var(--rv-line-gold);background:#000}
+.k-pack-fig img,.k-pack-fig svg{width:100%;height:100%;object-fit:cover}
+.k-pack-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.k-pack-dna{display:flex;flex-direction:column;gap:10px;min-width:0}
+.k-pack-pal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.k-pack-pair+.k-pack-dna .k-pack-pal{grid-template-columns:repeat(4,minmax(0,1fr))}
+.k-pack-pal div{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;min-width:0}
+.k-pack-pal i{flex:none;width:18px;height:18px;border-radius:5px;border:1px solid rgba(255,255,255,.2)}
+.k-pack-pal span{overflow-wrap:anywhere}
+.k-pack-row{font-size:13px;line-height:1.35}
+.k-pack-row b{color:var(--rv-muted)}
+.k-pack-row span{color:var(--rv-ink)}
 @media (min-width:900px){
   .k-res-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:40px}
-  .k-hero{position:sticky;top:20px;max-height:none}
+  .k-hero-col{position:sticky;top:20px}
+  .k-hero{max-height:none}
+  .k-hero.k-ai{max-height:calc(100vh - 190px)}
 }
 </style>
 </head>
@@ -113,8 +218,11 @@
 <header class="rv-top" id="top"></header>
 <main id="app" aria-live="polite"></main>
 <p class="rv-sr" id="announce" aria-live="assertive"></p>
+<input class="rv-sr" type="file" accept="image/*" id="photo-input" tabindex="-1" aria-hidden="true">
 <script src="../assets/riverside.js"></script>
 <script src="../assets/kitchen-art.js"></script>
+<script src="config.js"></script>
+<script src="engine.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

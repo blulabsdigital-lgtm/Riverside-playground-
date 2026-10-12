@@ -1,5 +1,6 @@
-/* Kitchen style match: swipe ten Riverside kitchens, get a style, a kitchen designed from the swipes,
-   one tap for size, a guide price, and a style brief for Alex. */
+/* Kitchen style match: add a photo of your kitchen, swipe ten Riverside kitchens, get a style and a kitchen
+   designed from the swipes. When the engine is on (config.js), the customer also sees their own kitchen
+   redesigned in that style. Then one tap for size, a guide price, and a style brief for Alex. */
 (function () {
   'use strict';
 
@@ -11,31 +12,96 @@
     { id: 'open', label: 'Open-plan', hint: 'Kitchen-diner or extension', price: [36000, null], icon: '<path d="M6 8h16v5H11v13H6z"/><rect x="15" y="18" width="8" height="5"/><rect x="26" y="22" width="9" height="11" rx="1.5"/>' }
   ];
 
-  var A = window.KitchenArt, RV = window.RV;
+  var EARLY_AT = 7; // start the engine in the background after this many swipes
+  var WAIT_STEPS = ['Reading your kitchen', 'Matching your style', 'Fitting your new doors', 'Final checks'];
+
+  var A = window.KitchenArt, RV = window.RV, E = window.KitchenEngine;
   var app = document.getElementById('app');
   var announce = document.getElementById('announce');
+  var picker = document.getElementById('photo-input');
   RV.header(document.getElementById('top'), { home: '../', back: '../', backLabel: 'All tools' });
+
+  var ICON = {
+    lock: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+  };
 
   var art = {};
   A.CARDS.forEach(function (c) { art[c.id] = c.photo ? '<img src="' + RV.esc(c.photo) + '" alt="">' : A.svg(c); });
 
+  var photo = null;  // their kitchen today: { src, w, h, id }, kept when they swipe again
+  var photoSeq = 0;
+  var job = null;    // the engine request: { sig, style, photoId, status, res, started, promise, cancel }
+  var ticker = null;
   var state;
-  function reset() { state = { i: 0, order: A.CARDS.slice(), loved: [], nope: [], history: [], size: null, result: null }; }
+  function reset() { stopJob(); state = { i: 0, order: A.CARDS.slice(), loved: [], nope: [], history: [], size: null, result: null, ranked: null }; }
   reset();
   intro();
 
+  /* ---------- Photo ---------- */
+  var onPicked = null;
+  picker.addEventListener('change', function () {
+    var file = picker.files && picker.files[0], cb = onPicked;
+    onPicked = null;
+    if (file && cb) cb(file);
+  });
+  function pickPhoto(cb) { onPicked = cb; picker.value = ''; picker.click(); }
+
+  // Opens the picker, reads the photo, then calls done(). btn shows progress, err shows a problem.
+  function addPhoto(btn, err, done) {
+    pickPhoto(function (file) {
+      var label = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = 'Reading your photo…';
+      if (err) err.textContent = '';
+      E.readPhoto(file).then(function (p) {
+        stopJob();
+        p.id = ++photoSeq;
+        photo = p;
+        done();
+      }, function () {
+        btn.disabled = false;
+        btn.innerHTML = label;
+        if (err) err.textContent = 'We couldn\'t open that photo. Please try a different one.';
+      });
+    });
+  }
+
+  function ratio(p) { return Math.max(0.68, Math.min(1.78, p.w / p.h)).toFixed(4); }
+
   /* ---------- Intro ---------- */
   function intro() {
+    var on = E.enabled();
     app.innerHTML =
       '<section class="k-intro rv-screen">' +
       '<div class="k-fan" aria-hidden="true"><div class="k-mini">' + art.clay + '</div><div class="k-mini">' + art.forest + '</div><div class="k-mini">' + art.sage + '</div>' +
       '<div class="k-heart">' + RV.icon('heart', { fill: true, size: 24 }) + '</div></div>' +
       '<div class="k-intro-copy"><span class="rv-eyebrow">Kitchen style match</span>' +
-      '<h1>Find your kitchen style in 30 seconds</h1>' +
-      '<p class="rv-lead">Swipe through ten Riverside kitchens. Right if you love it, left if it\'s not for you. We\'ll work out your style and design a kitchen from your picks.</p>' +
-      '<button class="rv-btn block" type="button" id="go">Start swiping ' + RV.icon('arrow', { size: 20 }) + '</button>' +
-      '<p class="rv-small" style="margin-top:6px">No sign-up. One question at the end.</p></div></section>';
-    document.getElementById('go').addEventListener('click', swipe);
+      (on ? '<h1>See your kitchen in the style you love</h1>' +
+        '<p class="rv-lead">Add a photo of your kitchen, then swipe through ten Riverside kitchens. Right if you love it, left if it\'s not for you. We\'ll work out your style and show you your own kitchen redesigned in it.</p>'
+        : '<h1>Find your kitchen style in 30 seconds</h1>' +
+        '<p class="rv-lead">Swipe through ten Riverside kitchens. Right if you love it, left if it\'s not for you. We\'ll work out your style and design a kitchen from your picks. Add a photo of your kitchen first, so Alex can see your space.</p>') +
+      '<div class="k-intro-actions">' +
+      '<button class="rv-btn block" type="button" id="add">' + RV.icon('camera', { size: 20 }) + 'Add a photo of your kitchen</button>' +
+      '<p class="k-photo-err" id="photo-err" role="alert"></p>' +
+      '<p class="k-safe">' + ICON.lock + '<span>' + (on ? 'Your photo is only used to make your design. It is not stored.' : 'Your photo is only used for your design brief. It is not stored.') + '</span></p>' +
+      '<button class="rv-link k-skip" type="button" id="skip">Skip, just swipe</button>' +
+      '</div></div></section>';
+    var add = document.getElementById('add');
+    add.addEventListener('click', function () { addPhoto(add, document.getElementById('photo-err'), gotPhoto); });
+    document.getElementById('skip').addEventListener('click', swipe);
+  }
+
+  function gotPhoto() {
+    app.innerHTML =
+      '<section class="k-got rv-screen">' +
+      '<div class="k-got-frame" style="--ar:' + ratio(photo) + '"><img src="' + photo.src + '" alt="Your kitchen today">' +
+      '<span class="k-got-tick">' + RV.icon('check', { size: 26, stroke: 3 }) + '</span></div>' +
+      '<h1>Got it. Now swipe the kitchens you love.</h1></section>';
+    window.scrollTo(0, 0);
+    var t = setTimeout(go, RV.reducedMotion() ? 1400 : 2000);
+    function go() { clearTimeout(t); if (document.querySelector('.k-got')) swipe(); }
+    app.querySelector('.k-got').addEventListener('click', go);
   }
 
   /* ---------- Swipe ---------- */
@@ -134,7 +200,7 @@
     setTimeout(function () {
       state.i++;
       busy = false;
-      if (state.i >= state.order.length) building(); else drawStack();
+      if (state.i >= state.order.length) building(); else { drawStack(); startEarly(); }
     }, 300);
   }
 
@@ -206,9 +272,73 @@
     return { spec: spec, top: top, second: second };
   }
 
+  /* ---------- The engine: redesign their photo in the matched style ---------- */
+  function styleOf(r) { return E.style(r.spec, A.STYLES[r.top].name, r.second ? A.STYLES[r.second].name : null); }
+
+  function startJob(r) {
+    stopJob();
+    var s = styleOf(r), call = E.restyle(photo.src, s);
+    var j = { sig: E.signature(s), style: s, photoId: photo.id, status: 'pending', res: null, started: Date.now(), cancel: call.cancel };
+    j.promise = call.promise.then(function (res) {
+      j.res = res;
+      j.status = res.ok ? 'done' : 'failed';
+      return res;
+    });
+    job = j;
+    return j;
+  }
+  function stopJob() { if (job && job.status === 'pending') job.cancel(); job = null; }
+
+  // After 7 swipes, start on the style they are leaning towards, so the wait at the end is shorter.
+  function startEarly() {
+    if (job || !photo || !E.enabled() || state.i < EARLY_AT || !state.loved.length) return;
+    startJob(design(scoreStyles()));
+  }
+
+  // After the last swipe: keep the early request if it still matches, otherwise start again with the final style.
+  function finalJob(r) {
+    var keep = job && job.photoId === photo.id &&
+      (job.status === 'failed' ? E.isFinal(job.res.code) : job.sig === E.signature(styleOf(r)));
+    return keep ? job : startJob(r);
+  }
+
+  function engineFor() { return job && photo && job.photoId === photo.id ? job : null; }
+
+  // Rotating messages and an easing progress bar, timed from when the request started.
+  function tick(j, ids) {
+    clearInterval(ticker);
+    var long = false;
+    function step() {
+      var msg = document.getElementById(ids.msg);
+      if (!msg || job !== j || j.status !== 'pending') { clearInterval(ticker); return; }
+      var t = Date.now() - j.started;
+      var i = Math.min(WAIT_STEPS.length - 1, Math.floor(t / 5000));
+      if (msg.getAttribute('data-i') !== String(i)) {
+        msg.setAttribute('data-i', i);
+        msg.textContent = WAIT_STEPS[i];
+        msg.classList.remove('in'); void msg.offsetWidth; msg.classList.add('in');
+      }
+      var bar = ids.bar && document.getElementById(ids.bar);
+      if (bar) bar.style.width = (94 * (1 - Math.exp(-t / 15000))).toFixed(1) + '%';
+      var sub = ids.sub && document.getElementById(ids.sub);
+      if (sub && !long && t > 30000) { long = true; sub.textContent = 'This one is taking a little longer than usual.'; }
+    }
+    step();
+    ticker = setInterval(step, 400);
+  }
+
+  function scanHTML() {
+    return '<div class="k-scan" style="--ar:' + ratio(photo) + '"><img src="' + photo.src + '" alt="Your kitchen today, being redesigned">' +
+      '<i class="k-scan-band" aria-hidden="true"></i><span class="k-scan-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>';
+  }
+
+  /* ---------- After the last swipe ---------- */
   function building() {
     var loved = state.loved;
-    if (!loved.length) return noMatch();
+    if (!loved.length) { stopJob(); return noMatch(); }
+    state.ranked = scoreStyles();
+    state.result = design(state.ranked);
+    if (photo && E.enabled() && finalJob(state.result).status === 'pending') return waiting();
     app.innerHTML = '<section class="k-build rv-screen"><span class="rv-eyebrow">Your picks</span>' +
       '<div class="k-board">' + loved.slice(0, 9).map(function (c, i) { return '<div style="animation-delay:' + (i * 0.09) + 's">' + art[c.id] + '</div>'; }).join('') + '</div>' +
       '<p class="k-build-msg" id="msg">Reading your swipes…</p></section>';
@@ -217,6 +347,30 @@
     setTimeout(function () { var m = document.getElementById('msg'); if (m) m.textContent = msgs[0]; }, wait);
     setTimeout(function () { var m = document.getElementById('msg'); if (m) m.textContent = msgs[1]; }, wait * 2);
     setTimeout(result, wait * 3 + 100);
+  }
+
+  // Only while the engine is still working: their photo being read, and the kitchens they loved.
+  function waiting() {
+    var j = job, shown = Date.now();
+    app.innerHTML =
+      '<section class="k-wait rv-screen">' +
+      '<div class="k-wait-photo">' + scanHTML() + '</div>' +
+      '<div class="k-wait-copy"><span class="rv-eyebrow">Designing your kitchen</span>' +
+      '<p class="k-wait-msg k-msg" id="wait-msg" role="status"></p>' +
+      '<div class="k-wait-bar" aria-hidden="true"><i id="wait-bar"></i></div>' +
+      '<p class="rv-small" id="wait-sub">We\'re redesigning your own kitchen from your swipes.</p>' +
+      '<div class="k-wait-loved"><span class="k-label">Kitchens you loved</span><div class="k-wait-board">' +
+      state.loved.map(function (c, i) { return '<div style="animation-delay:' + (0.25 + i * 0.08).toFixed(2) + 's" title="' + RV.esc(c.name) + '">' + art[c.id] + '</div>'; }).join('') +
+      '</div></div></div></section>';
+    window.scrollTo(0, 0);
+    tick(j, { msg: 'wait-msg', bar: 'wait-bar', sub: 'wait-sub' });
+    j.promise.then(function () {
+      if (job !== j || !document.getElementById('wait-msg')) return;
+      clearInterval(ticker);
+      var bar = document.getElementById('wait-bar');
+      if (bar) bar.style.width = '100%';
+      setTimeout(function () { if (document.getElementById('wait-msg')) result(); }, Math.max(450, 1600 - (Date.now() - shown)));
+    });
   }
 
   function noMatch() {
@@ -231,15 +385,11 @@
 
   /* ---------- Result ---------- */
   function result() {
-    var ranked = scoreStyles();
-    var r = design(ranked);
-    state.result = r;
+    var ranked = state.ranked, r = state.result;
     var style = A.STYLES[r.top], d = A.describe(r.spec);
-    var yours = A.svg(r.spec, { label: 'Your kitchen, designed from your swipes' });
-    state.yoursArt = yours;
     app.innerHTML =
       '<section class="k-result rv-screen"><div class="k-res-grid">' +
-      '<div class="k-hero"><span class="k-hero-tag">Designed from your swipes</span><div class="k-hero-art">' + yours + '</div></div>' +
+      '<div class="k-hero-col" id="hero-col"></div>' +
       '<div class="k-res-body">' +
       '<div><span class="rv-eyebrow">Your kitchen style</span><h1>' + RV.esc(style.name) + '</h1>' +
       (r.second ? '<p class="k-twist">with a touch of ' + RV.esc(A.STYLES[r.second].name) + '</p>' : '') + '</div>' +
@@ -260,6 +410,7 @@
       }).join('') + '</div><div id="price"></div></div>' +
       '<button class="rv-link" type="button" id="again" style="align-self:flex-start">Swipe again</button>' +
       '</div></div></section>';
+    renderHero();
     window.scrollTo(0, 0);
     setTimeout(function () {
       app.querySelectorAll('.k-track i').forEach(function (i) { i.style.width = i.getAttribute('data-w') + '%'; });
@@ -269,6 +420,146 @@
     });
     document.getElementById('again').addEventListener('click', function () { reset(); swipe(); });
     if (!RV.reducedMotion()) setTimeout(function () { RV.confetti({ count: 70, y: 0.2 }); }, 1250);
+  }
+
+  /* The hero: their kitchen redesigned, their photo being redesigned, or the illustrated design. */
+  function renderHero() {
+    var col = document.getElementById('hero-col');
+    if (!col) return;
+    clearInterval(ticker);
+    var j = engineFor(), r = state.result;
+    var board = A.svg(r.spec, { label: 'Your kitchen, designed from your swipes' });
+
+    if (j && j.status === 'done') {
+      col.innerHTML =
+        '<div class="k-hero k-ai" id="hero-yours" role="tabpanel" aria-labelledby="tab-yours" style="--ar:' + ratio(photo) + '">' +
+        '<img class="k-before" src="' + photo.src + '" alt="Your kitchen today">' +
+        '<img class="k-after" src="' + j.res.image + '" alt="Your kitchen, redesigned in ' + RV.esc(j.style.styleName) + '">' +
+        '<span class="k-hero-tag" id="hero-tag">Designed from your swipes</span>' +
+        '<button class="k-hold" type="button" id="hold" aria-pressed="false">' + ICON.eye + '<span>Hold to see your kitchen today</span></button></div>' +
+        '<div class="k-hero" id="hero-board" role="tabpanel" aria-labelledby="tab-board" hidden><span class="k-hero-tag">Style board</span><div class="k-hero-art">' + board + '</div></div>' +
+        '<div class="k-tabs" role="tablist" aria-label="Your design">' +
+        '<button type="button" role="tab" id="tab-yours" aria-controls="hero-yours" aria-selected="true">Your kitchen</button>' +
+        '<button type="button" role="tab" id="tab-board" aria-controls="hero-board" aria-selected="false" tabindex="-1">Style board</button></div>' +
+        '<p class="k-hero-cap">An AI impression made from your photo. Alex designs the real thing with you at your design visit.</p>';
+      var after = col.querySelector('.k-after');
+      after.addEventListener('load', function () {
+        if (after.naturalWidth) col.querySelector('.k-ai').style.setProperty('--ar', ratio({ w: after.naturalWidth, h: after.naturalHeight }));
+      });
+      settleReveal(col.querySelector('.k-ai'), 2200);
+      bindHold(col.querySelector('#hold'), col.querySelector('.k-ai'));
+      bindTabs(col);
+      return;
+    }
+
+    if (j && j.status === 'pending') {
+      col.innerHTML =
+        '<div class="k-hero k-ai k-working" style="--ar:' + ratio(photo) + '">' + scanHTML() +
+        '<span class="k-hero-tag">Designing your kitchen</span>' +
+        '<p class="k-working-msg k-msg" id="hero-msg" role="status"></p></div>';
+      tick(j, { msg: 'hero-msg' });
+      j.promise.then(function () { if (job === j) renderHero(); });
+      return;
+    }
+
+    var note = '';
+    if (j && j.status === 'failed') {
+      var f = failure(j.res);
+      note = '<div class="k-note"><span>' + RV.esc(f.text) + '</span>' +
+        (f.action ? '<button class="rv-link" type="button" id="note-act">' + (f.action === 'photo' ? 'Try another photo' : 'Try again') + '</button>' : '') + '</div>';
+    } else if (!photo && E.enabled()) {
+      note = '<div class="k-note"><span>Want to see your own kitchen in this style?</span><button class="rv-link" type="button" id="note-act">Add a photo of your kitchen</button></div>';
+    }
+    col.innerHTML =
+      '<div class="k-hero" id="hero-board"><span class="k-hero-tag">Designed from your swipes</span><div class="k-hero-art">' + board + '</div>' +
+      (photo ? '<figure class="k-today"><img src="' + photo.src + '" alt="Your kitchen today" style="aspect-ratio:' + ratio(photo) + '"><figcaption>Your kitchen today</figcaption></figure>' : '') +
+      '</div>' + note + '<p class="k-photo-err" id="hero-err" role="alert"></p>';
+    settleReveal(col.querySelector('.k-hero'), 1600);
+    var act = document.getElementById('note-act');
+    if (!act) return;
+    var needPhoto = !photo || failure(j.res).action === 'photo';
+    act.addEventListener('click', function () {
+      if (needPhoto) addPhoto(act, document.getElementById('hero-err'), redesign);
+      else redesign();
+    });
+  }
+
+  // Start (or restart) the redesign from the result page, shown in place in the hero.
+  function redesign() {
+    if (!photo || !E.enabled() || !state.result) return;
+    startJob(state.result);
+    renderHero();
+    if (innerWidth < 900) window.scrollTo({ top: 0, behavior: RV.reducedMotion() ? 'auto' : 'smooth' });
+  }
+
+  function failure(res) {
+    var swipes = ', so this is the design from your swipes.';
+    switch (res.code) {
+      case 'not_kitchen': return { text: res.message || 'That photo doesn\'t look like a kitchen. Try one taken from the doorway, with the units in view.', action: 'photo' };
+      case 'bad_input': return { text: 'We couldn\'t read that photo' + swipes, action: 'photo' };
+      case 'rate_limited': return { text: 'You\'ve reached the limit for redesigns for now' + swipes, action: null };
+      case 'engine_busy': return { text: 'Our design engine is busy just now' + swipes, action: 'retry' };
+      case 'timeout': return { text: 'Redesigning your photo took too long this time' + swipes, action: 'retry' };
+      default: return { text: 'We couldn\'t redesign your photo this time' + swipes, action: 'retry' };
+    }
+  }
+
+  // Play the reveal once; switching tabs later should not replay it.
+  function settleReveal(el, ms) {
+    if (!el) return;
+    setTimeout(function () { el.classList.add('seen'); }, RV.reducedMotion() ? 0 : ms);
+  }
+
+  // Press and hold (or hold Space or Enter) to see their kitchen as it is today.
+  function bindHold(btn, hero) {
+    var tag = hero.querySelector('.k-hero-tag');
+    function on() {
+      if (hero.classList.contains('holding')) return;
+      hero.classList.add('seen', 'holding');
+      btn.setAttribute('aria-pressed', 'true');
+      tag.textContent = 'Your kitchen today';
+      announce.textContent = 'Showing your kitchen today';
+    }
+    function off() {
+      if (!hero.classList.contains('holding')) return;
+      hero.classList.remove('holding');
+      btn.setAttribute('aria-pressed', 'false');
+      tag.textContent = 'Designed from your swipes';
+      announce.textContent = 'Showing your kitchen redesigned';
+    }
+    btn.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault();
+      try { btn.setPointerCapture(e.pointerId); } catch (err) { /* not supported */ }
+      on();
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture', 'blur'].forEach(function (ev) { btn.addEventListener(ev, off); });
+    btn.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(); } });
+    btn.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); off(); } });
+    btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  }
+
+  function bindTabs(col) {
+    var tabs = [].slice.call(col.querySelectorAll('[role=tab]'));
+    function select(n) {
+      tabs.forEach(function (t, k) {
+        var on = k === n;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      if (n === 1) settleReveal(document.getElementById('hero-board'), 1600);
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var n = (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+        select(n);
+        tabs[n].focus();
+      });
+    });
   }
 
   function pickSize(id) {
@@ -290,10 +581,12 @@
     var size = state.size;
     var price = size ? RV.range(size.price[0], size.price[1]) : 'To discuss';
     var d = r ? A.describe(r.spec) : null;
+    var j = engineFor(), ai = j && j.status === 'done' ? j.res.image : null;
     RV.lead({
       title: 'Send your kitchen style to Alex',
-      intro: 'Alex or a member of the team will call you within 24 hours to talk through your style, your space and your budget.',
-      recap: r ? [A.STYLES[r.top].name, size ? size.label + ' kitchen' : null, price].filter(Boolean) : ['Style to discuss'],
+      intro: photo ? 'Your style and your kitchen photo go to Alex. He or a member of the team will call you within 24 hours to talk through your space and your budget.'
+        : 'Alex or a member of the team will call you within 24 hours to talk through your style, your space and your budget.',
+      recap: r ? [A.STYLES[r.top].name, size ? size.label + ' kitchen' : null, price, photo ? 'Photo of your kitchen' : null].filter(Boolean) : ['Style to discuss'],
       submitLabel: 'Send my style to Alex',
       whatsapp: function (v) {
         return 'Hi Alex, I\'ve just used your kitchen style match.\n\n' +
@@ -301,6 +594,7 @@
           'My style: ' + style + '\n' +
           (size ? 'Kitchen size: ' + size.label + '\nGuide price: ' + price + '\n' : '') +
           (state.loved.length ? 'Kitchens I loved: ' + state.loved.map(function (c) { return c.name; }).join(', ') + '\n' : '') +
+          (photo ? 'I\'ve added a photo of my kitchen.\n' : '') +
           '\nCould we book a design consultation?';
       },
       pack: function (v) {
@@ -308,20 +602,28 @@
           ['Kitchen size', size ? size.label : 'Not given'], ['Guide price', price]];
         var visual = '';
         if (r) {
-          visual = '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start">' +
-            '<div style="border-radius:12px;overflow:hidden;aspect-ratio:4/5;border:1px solid var(--rv-line-gold)">' + state.yoursArt + '</div>' +
-            '<div style="display:flex;flex-direction:column;gap:10px;min-width:0"><span class="rv-pack-label">Their palette</span>' +
-            '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">' + d.palette.map(function (s) {
-              return '<div style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;min-width:0"><i style="flex:none;width:18px;height:18px;border-radius:5px;background:' + s.colour + ';border:1px solid rgba(255,255,255,.2)"></i><span style="overflow-wrap:anywhere">' + RV.esc(s.name) + '</span></div>';
+          var board = A.svg(r.spec);
+          var dna = '<div class="k-pack-dna"><span class="rv-pack-label">Their palette</span>' +
+            '<div class="k-pack-pal">' + d.palette.map(function (s) {
+              return '<div><i style="background:' + s.colour + '"></i><span>' + RV.esc(s.name) + '</span></div>';
             }).join('') + '</div>' +
-            d.rows.slice(0, 4).map(function (row) { return '<div style="font-size:13px;line-height:1.35"><b style="color:var(--rv-muted)">' + RV.esc(row[0]) + ':</b> <span style="color:var(--rv-ink)">' + RV.esc(row[1]) + '</span></div>'; }).join('') +
-            '</div></div>' +
-            thumbs('Loved', state.loved) + thumbs('Not for them', state.nope);
+            d.rows.slice(0, 4).map(function (row) { return '<div class="k-pack-row"><b>' + RV.esc(row[0]) + ':</b> <span>' + RV.esc(row[1]) + '</span></div>'; }).join('') + '</div>';
+          visual = photo
+            ? '<div class="k-pack-pair">' + figure('Their kitchen today', '<img src="' + photo.src + '" alt="">') +
+              (ai ? figure('In their chosen style', '<img src="' + ai + '" alt="">') : figure('Designed from their swipes', board)) + '</div>' + dna
+            : '<div class="k-pack-grid"><div class="k-pack-fig" style="aspect-ratio:4/5">' + board + '</div>' + dna + '</div>';
+          visual += thumbs('Loved', state.loved) + thumbs('Not for them', state.nope);
+        } else if (photo) {
+          visual = '<div class="k-pack-pair">' + figure('Their kitchen today', '<img src="' + photo.src + '" alt="">') + '</div>';
         }
         return { bar: 'New kitchen enquiry', rows: rows, visual: visual, questions: questions(r),
           saving: { value: 'About 45 minutes per lead', label: 'No fact-finding call, and no chasing photos or Pinterest boards before the design visit.' } };
       }
     });
+  }
+
+  function figure(label, inner) {
+    return '<div class="k-pack-cell"><span class="rv-pack-label">' + label + '</span><div class="k-pack-fig" style="aspect-ratio:' + ratio(photo) + '">' + inner + '</div></div>';
   }
 
   function thumbs(label, list) {

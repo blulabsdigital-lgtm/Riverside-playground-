@@ -10,7 +10,7 @@ const OUT = process.argv[2], W = +(process.argv[3] || 390), H = +(process.argv[4
   await p.goto((process.env.BASE || 'http://127.0.0.1:8765') + '/kitchen/', { waitUntil: 'load' });
   await p.waitForTimeout(500); await overflow('intro');
   await p.screenshot({ path: OUT + '-1-intro.png' });
-  await p.click('#go'); await p.waitForTimeout(400); await overflow('swipe');
+  await p.click('#skip'); await p.waitForTimeout(400); await overflow('swipe');
   // drag the first card right
   const box = await p.locator('.k-card.top').boundingBox();
   await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
